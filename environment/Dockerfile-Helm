@@ -1,0 +1,3 @@
+FROM alpine/k8s:1.26.0
+USER root 
+RUN helm plugin install https://github.com/datreeio/helm-datree

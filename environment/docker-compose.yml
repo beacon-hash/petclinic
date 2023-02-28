@@ -1,0 +1,64 @@
+version: '3.7'
+volumes:
+  jenkins_home:
+    external: true
+  sonarqube_data:
+    external: true
+  sonarqube_extensions:
+    external: true
+networks:
+  devopslag:
+    external: true
+services:
+  jenkins:
+    image: jenkins:latest
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
+      - 50000:50000
+    hostname: jenkins.devopslag.local
+    container_name: jenkins
+    networks:
+      devopslag:
+        ipv4_address: 172.20.20.10
+  sonarqube:
+    image: sonarqube:latest 
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    ports:
+      - 9000:9000
+    hostname: sonarqube.devopslag.local
+    container_name: sonarqube
+    networks:
+      devopslag:
+        ipv4_address: 172.20.20.11
+  nexus:
+    image: sonatype/nexus3:latest
+    ports:
+      - 8081:8081
+      - 8082:8082
+      - 8083:8083
+      - 8084:8084
+    hostname: nexus.devopslag.local
+    container_name: nexus
+    networks:
+      devopslag:
+        ipv4_address: 172.20.20.12
+  gitlab:
+    image: gitlab/gitlab-ee
+    hostname: gitlab.devopslag.local
+    container_name: gitlab
+    networks:
+      devopslag:
+        ipv4_address: 172.20.20.13
+    restart: always
+    volumes:
+      - /srv/gitlab/config:/etc/gitlab
+      - /srv/gitlab/logs:/var/log/gitlab
+      - /srv/gitlab/data:/var/opt/gitlab
+    shm_size: '256m'
+
+

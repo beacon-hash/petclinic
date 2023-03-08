@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Preparation') {
             steps {
-                git branch: 'master', url: 'https://github.com/beacon-hash/petclinic.git'
+                git branch: 'master', url: 'https://github.com/beacon-hash/petclinic.git/'
             }
         }
         stage('Unit Test') {

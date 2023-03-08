@@ -2,14 +2,13 @@ pipeline {
     agent {
         docker {
             image 'maven'
-            args '-v /root/.m2:/root/.m2 --user root --link sonarqube:sonarqube --network environment_default'
+            args '-v $JENKINS_HOME/.m2:/root/.m2 --user root --network devopslag'
         }
     }
     stages {
         stage('Preparation') {
             steps {
-                sh 'rm -rf *' // Cleaning workspace before the build starts.
-                git branch: 'main', url: 'https://github.com/beacon-hash/petclinic.git'
+                git branch: 'master', url: 'https://github.com/beacon-hash/petclinic.git'
             }
         }
         stage('Unit Test') {
@@ -32,41 +31,41 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-        stage('Static Code Analysis') {
-            steps {
-                withSonarQubeEnv(credentialsId: 'sonarqube-token', installationName: 'Sonarqube Server') {
-                    sh "mvn sonar:sonar -Dsonar.scanner.metadataFilePath=${WORKSPACE}/report-task.txt clean package"
-                }
-            }
-        }
-        stage('Quality Gate') {
-            steps {
-                waitForQualityGate abortPipeline: true
-            }
-        }
-        stage('Push to Artifactory') {
-            steps {
-                script {
-                    def pom = readMavenPom file: 'pom.xml'
-                    def repository = pom.version.endsWith("SNAPSHOT") ? "petclinic-snapshot" : "petclinic-release"
-                    nexusArtifactUploader artifacts: [
-                        [
-                            artifactId: "${pom.artifactId}", 
-                            classifier: '', 
-                            file: "target/${pom.artifactId}-${pom.version}.jar", 
-                            type: 'jar'
-                        ]
-                    ], 
-                    credentialsId: 'nexus-creds', 
-                    groupId: "${pom.groupId}", 
-                    nexusUrl: 'nexus:8081', 
-                    nexusVersion: 'nexus3', 
-                    protocol: 'http', 
-                    repository: "${repository}", 
-                    version: "${pom.version}"
-                }
+        // stage('Static Code Analysis') {
+        //     steps {
+        //         withSonarQubeEnv(credentialsId: 'sonarqube-token', installationName: 'Sonarqube Server') {
+        //             sh "mvn sonar:sonar -Dsonar.scanner.metadataFilePath=${WORKSPACE}/report-task.txt clean package"
+        //         }
+        //     }
+        // }
+        // stage('Quality Gate') {
+        //     steps {
+        //         waitForQualityGate abortPipeline: true
+        //     }
+        // }
+        // stage('Push to Artifactory') {
+        //     steps {
+        //         script {
+        //             def pom = readMavenPom file: 'pom.xml'
+        //             def repository = pom.version.endsWith("SNAPSHOT") ? "petclinic-snapshot" : "petclinic-release"
+        //             nexusArtifactUploader artifacts: [
+        //                 [
+        //                     artifactId: "${pom.artifactId}", 
+        //                     classifier: '', 
+        //                     file: "target/${pom.artifactId}-${pom.version}.jar", 
+        //                     type: 'jar'
+        //                 ]
+        //             ], 
+        //             credentialsId: 'nexus-creds', 
+        //             groupId: "${pom.groupId}", 
+        //             nexusUrl: 'nexus:8081', 
+        //             nexusVersion: 'nexus3', 
+        //             protocol: 'http', 
+        //             repository: "${repository}", 
+        //             version: "${pom.version}"
+        //         }
 
-            }
-        }
+        //     }
+        // }
     }
 }

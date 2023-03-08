@@ -1,14 +1,5 @@
 pipeline {
-    agent {
-        // docker {
-        //     image 'maven'
-        //     args '-v $JENKINS_HOME/.m2:/root/.m2 --user root --network devopslag'
-        // }
-        label 'master'
-    }
-    tools {
-        maven 'maven-3.8.7'
-    }
+    agent none
     environment {
         CODE_CHANGED = false
     }
@@ -19,6 +10,12 @@ pipeline {
             }
         }
         stage('Unit Test') {
+            agent {
+                docker {
+                    image 'maven'
+                    args '-v $JENKINS_HOME/.m2:/root/.m2 --user root --network devopslag'
+            }
+            }
             steps {
                 sh 'mvn test'
             }
@@ -29,11 +26,21 @@ pipeline {
             }
         }
         stage('Integration Test') {
+            agent {
+                docker {
+                    image 'maven'
+                    args '-v $JENKINS_HOME/.m2:/root/.m2 --user root --network devopslag'
+            }
             steps {
                 sh 'mvn verify -DskipUnitTests'
             }
         }
         stage('Build') {
+            agent {
+                docker {
+                    image 'maven'
+                    args '-v $JENKINS_HOME/.m2:/root/.m2 --user root --network devopslag'
+            }
             steps {
                 sh 'mvn clean install'
             }
@@ -75,6 +82,7 @@ pipeline {
         //     }
         // }
         stage('test') {
+            agent {label 'master'}
             steps {
                 script {
                     def changedFiles = sh(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split()

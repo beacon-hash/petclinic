@@ -1,9 +1,13 @@
 pipeline {
     agent {
-        docker {
-            image 'maven'
-            args '-v $JENKINS_HOME/.m2:/root/.m2 --user root --network devopslag'
-        }
+        // docker {
+        //     image 'maven'
+        //     args '-v $JENKINS_HOME/.m2:/root/.m2 --user root --network devopslag'
+        // }
+        label 'master'
+    }
+    tools {
+        maven 'maven-3.8.7'
     }
     environment {
         CODE_CHANGED = false
@@ -70,11 +74,6 @@ pipeline {
 
         //     }
         // }
-    }
-    stages {
-        agent {
-            label 'master'
-        }
         stage('test') {
             steps {
                 script {
@@ -91,4 +90,5 @@ pipeline {
 
         }
     }
+
 }

@@ -70,7 +70,7 @@ pipeline {
         stage('test') {
             steps {
                 script {
-                    sh "git diff-tree --no-commit-id --name-only -r $GIT_COMMIT"
+                    def changedFiles = ""
                 }
             }
         }

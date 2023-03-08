@@ -69,6 +69,9 @@ pipeline {
         // }
         stage('test') {
             steps {
+                agent {
+                    label 'master'
+                }
                 script {
                     // def changedFiles = sh(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true)
                     // for (int i = 0; i < changedFiles.size(); ++i) {

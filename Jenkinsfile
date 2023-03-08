@@ -14,6 +14,7 @@ pipeline {
                 docker {
                     image 'maven'
                     args '-v $JENKINS_HOME/.m2:/root/.m2 --user root --network devopslag'
+                }
             }
             }
             steps {
@@ -30,6 +31,7 @@ pipeline {
                 docker {
                     image 'maven'
                     args '-v $JENKINS_HOME/.m2:/root/.m2 --user root --network devopslag'
+                }
             }
             steps {
                 sh 'mvn verify -DskipUnitTests'
@@ -40,6 +42,7 @@ pipeline {
                 docker {
                     image 'maven'
                     args '-v $JENKINS_HOME/.m2:/root/.m2 --user root --network devopslag'
+                }
             }
             steps {
                 sh 'mvn clean install'
